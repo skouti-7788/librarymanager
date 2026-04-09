@@ -38,23 +38,40 @@ export default function Dashboard({books,members,loans}){
                   <div style={{fontWeight:600,fontSize:".87rem"}}>{bk?.title}</div>
                   <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{mb?.nom} · {l.borrowDate}</div>
                 </div>
-                <span className={`badge ${l.status==="actif"?"b-active":l.status==="retard"?"b-over":"b-ret"}`}>{l.status}</span>
+                <span className={`badge ${l.status=== 1?"b-active":l.status==="retard"?"b-over":"b-ret"}`}>{l.status=== 1?"Actif":l.status==="retard"?"Retard":"Retourné"}</span>
               </div>
             );
           })}
         </div>
         <div className="dash-card">
           <h3>🔔 Alertes</h3>
-          {overdue>0&&<div className="r-item"><div className="r-icon ic-loan">⚠️</div><div><strong style={{fontSize:".9rem"}}>{overdue} emprunt(s) en retard</strong><div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>Adhérents dépassant la date de retour</div></div></div>}
-          <div className="r-item"><div className="r-icon ic-book">📤</div><div><strong style={{fontSize:".9rem"}}>{loans.filter(l=>l.status==="actif").length} emprunts actifs</strong><div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>En cours dans la bibliothèque</div></div></div>
-          {overdue===0&&<div className="r-item"><div className="r-icon ic-user">✅</div><div style={{fontSize:".88rem"}}>Aucun retard signalé</div></div>}
+          {overdue>0&&<div className="r-item">
+            <div className="r-icon ic-loan">⚠️</div>
+               <div>
+                  <strong style={{fontSize:".9rem"}}>{overdue} emprunt(s) en retard</strong>
+                  <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>Adhérents dépassant la date de retour</div>
+               </div>
+            </div>}
+          <div className="r-item">
+            <div className="r-icon ic-book">📤</div>
+            <div>
+              <strong style={{fontSize:".9rem"}}>{loans.filter(l=>l.status=== 1).length} emprunts actifs</strong>
+            <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>En cours dans la bibliothèque</div>
+            </div></div>
+          {overdue===0&&<div className="r-item">
+            <div className="r-icon ic-user">✅</div>
+            <div style={{fontSize:".88rem"}}>Aucun retard signalé</div>
+            </div>}
         </div>
         <div className="dash-card">
           <h3>🏆 Livres les + empruntés</h3>
           {books?.slice(0,4).map((b,i)=>(
             <div key={b.id} className="r-item">
               <div style={{width:30,textAlign:"center",fontWeight:700,color:"var(--gold)",fontSize:".95rem"}}>#{i+1}</div>
-              <div style={{flex:1}}><div style={{fontWeight:600,fontSize:".87rem"}}>{b.title}</div><div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{b.author}</div></div>
+              <div style={{flex:1}}>
+                <div style={{fontWeight:600,fontSize:".87rem"}}>{b.title}</div>
+                <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{b.author}</div>
+              </div>
               <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{b.quantity-b.available} empr.</div>
             </div>
           ))}

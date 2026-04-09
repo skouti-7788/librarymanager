@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
-import {  initLoans } from "./data/databese";
 import useBooks  from "./data/databese"
-import useAdherents from "./data/databese"
+import {useAdherents, useEmprunts} from "./data/databese"
 import Dashboard from "./pages/dashbord";
 import Books from "./pages/books";
 import Members from "./pages/mambers";
@@ -12,18 +11,18 @@ import "./style.css";
 export default function App(){
   const {book} = useBooks();
   const {Adherent} = useAdherents();
+  const {emprunts} = useEmprunts();
   const [auth,setAuth]=useState(false);
   const [page,setPage]=useState("dashboard");
-  const [books,setBooks]=useState(null);
-  const [members,setMembers]=useState(null);
-   console.log(members)
-  useEffect(() => {
-    setBooks(book);
-    setMembers(Adherent);
-    // setLoans(initLoans);
-  }, [book, Adherent]);
+  const [books,setBooks]=useState([]);
+  const [members,setMembers]=useState([]);
+  useEffect(()=>{
+  if(book) setBooks(book);
+  if(Adherent) setMembers(Adherent);
+  if(emprunts) setLoans(emprunts);
+  },[book,Adherent,emprunts]);
  
-  const [loans,setLoans]=useState(initLoans);
+  const [loans,setLoans]=useState([]);
   const [toasts,setToasts]=useState([]);
   
   const showToast=useCallback((message,type="success")=>{
@@ -72,7 +71,7 @@ export default function App(){
           <main className="page">
             {page==="dashboard"&&<Dashboard books={books} members={members} loans={loans}/>}
             {page==="books"&&<Books books={books} setBooks={setBooks} showToast={showToast}/>}
-            {page==="members"&&<Members members={members} setMembers={setMembers} showToast={showToast}/>}
+            {page==="members"&&<Members setMembers={setMembers}members={members} books={books} xshowToast={showToast}/>}
             {page==="loans"&&<Loans loans={loans} setLoans={setLoans} books={books} setBooks={setBooks} members={members} showToast={showToast}/>}
           </main>
         </div>

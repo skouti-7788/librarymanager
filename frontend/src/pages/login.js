@@ -22,8 +22,12 @@ export default function Login({onLogin}){
           <h2>Connexion</h2>
           <p>Bienvenue, veuillez vous connecter.</p>
           <form onSubmit={submit}>
-            <div className="form-group"><label>Email</label><input type="email" value={email} onChange={e=>{setEmail(e.target.value);setErr("");}}/></div>
-            <div className="form-group"><label>Mot de passe</label><input type="password" value={pass} onChange={e=>{setPass(e.target.value);setErr("");}}/></div>
+            <div className="form-group">
+              <label>Email</label>
+              <input type="email" value={email} onChange={e=>{setEmail(e.target.value);setErr("");}}/></div>
+            <div className="form-group">
+              <label>Mot de passe</label>
+              <input type="password" value={pass} onChange={e=>{setPass(e.target.value);setErr("");}}/></div>
             {err&&<p className="err">{err}</p>}
             <button type="submit" className="btn-primary">Se connecter →</button>
             <p className="hint">Demo : admin@library.ma / admin123</p>

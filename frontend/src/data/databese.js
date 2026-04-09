@@ -9,19 +9,20 @@ export default function useBooks() {
       try {
         const res = await axios.get("http://127.0.0.1:8000/api/livres");
 
-        const mapped = res.data.map(b => ({
-          id: b.id,
-          titre: b.titre ?? "",
-          auteur: b.auteur ?? "",
-          isbn: b.isbn ?? "",
-          categorie: b.categorie ?? "",
-          annee: b.annee ?? "",
-          qte: Number(b.qte) || 0,
-          disponibilite: Number(b.disponibilite) || 0,
-          status: b.status ?? "actif"
-        }));
+        // const mapped = res.data.map(b => ({
+        //   id: b.id,
+        //   titre: b.titre ?? "",
+        //   auteur: b.auteur ?? "",
+        //   isbn: b.isbn ?? "",
+        //   categorie: b.categorie ?? "",
+        //   annee: b.annee ?? "",
+        //   qte: Number(b.qte) || 0,
+        //   disponibilite: Number(b.disponibilite) || 0,
+        //   status: b.status ?? ""
+        // }));
 
-        setBooks(mapped);
+        setBooks(res.data.livres);
+        // console.log(res.data.livres);
       } catch (err) {
         console.error("Fetch error:", err);
       }
@@ -34,15 +35,15 @@ export default function useBooks() {
   // ➕ ADD
    const addBook = async (form) => {
     const payload = {
-      titre: form.titre,
-      auteur: form.auteur,
-      isbn: form.isbn,
-      categorie: form.categorie,
-      annee: form.annee,
-      qte: form.qte,
-      disponibilite: form.disponibilite,
+      titre: form.titre || '--',
+      auteur: form.auteur|| '--',
+      isbn: form.isbn|| '--',
+      categorie: form.categorie|| '--',
+      annee: form.annee|| '--',
+      qte: form.qte|| 0,
+      disponibilite: form.disponibilite|| 0,
+      status: form.status 
     };
-
     const res = await axios.post(
       "http://127.0.0.1:8000/api/livres",
       payload
@@ -63,7 +64,9 @@ export default function useBooks() {
         categorie: form.categorie,
         annee: form.annee ? Number(form.annee) : null,
         qte: Number(form.qte),
-        disponibilite: Number(form.disponibilite)
+        disponibilite: Number(form.disponibilite),
+        status: form.status 
+
       }
     );
 
@@ -91,21 +94,22 @@ export default function useBooks() {
 
   return { book, addBook, updateBook, deleteBook };
 };
- 
-export    function useAdherents() {
+//===================================== function Adherents=======================================
+export   function useAdherents() {
   const [Adherent, setAdherent] = useState([]);
   useEffect(() => {
     const fetchBooks = async () => {
       try {
         const res = await axios.get("http://127.0.0.1:8000/api/adherents");
-
         const mapped = res.data.map(b => ({
           id: b.id,
+          livre:b.livre ?? "",
           nom: b.nom ?? "",
           email: b.email ?? "",
           phone: b.phone ?? "",
           disponibilite: b.disponibilite ?? "",
-          status: b.status ?? "actif"
+          status: b.status ?? "",
+          retard:b.retard ?? ""
          }));
 
         setAdherent(mapped);
@@ -116,35 +120,45 @@ export    function useAdherents() {
 
     fetchBooks();
   }, []);
-
+ 
 
   // ➕ ADD
    const addAdherent = async (form) => {
-    const payload = {
-      nom: form.nom,
-      email: form.email,
-      phone: form.phone,
-      disponibilite: form.disponibilite,
-     };
-
+    try{
     const res = await axios.post(
       "http://127.0.0.1:8000/api/adherents",
-      payload
-    );
-
+      {
+      nom: form.nom,
+      livre: form.livre,
+      email: form.email,
+      phone: form.phone,
+      datadahestion:  new Date().toISOString().split('T')[0],
+      status: form.status 
+      });
+      
     setAdherent(prev => [...prev, res.data]);
+    }catch(err){
+          console.error("Erreur add adherent :", err.response?.data || err);
+      //  console.log('Status:', error.response.status);
+      //  console.log('Error data:', error.response.data);  
+      //  console.log('Headers:', error.response.headers);
+    }
   };
 
   // ✏️ UPDATE
   const updateAdherent = async (id, form) => {
   try {
+    console.log(form)
     const res = await axios.put(
       `http://127.0.0.1:8000/api/adherents/${id}`,
       {
         nom: form.nom,
+        livre: form.livre,
         email: form.email,
         phone: form.phone,
-        disponibilite: form.disponibilite,
+        datadahestion:  new Date().toISOString().split('T')[0],
+        status: form.status ,
+        // retard:form.retard
  
       }
     );
@@ -170,18 +184,98 @@ export    function useAdherents() {
      console.error(err.response?.data || err.message);
   }
 };
-
   return { Adherent, addAdherent, updateAdherent, deleteAdherent };
-
 }
-  // {id:1,name:"Fatima Zahra El Idrissi",email:"fz.elidrissi@email.ma",phone:"0661234567",membershipDate:"2024-01-15",status:"actif"},
-  // {id:2,name:"Youssef Benkiran",email:"y.benkiran@gmail.com",phone:"0678901234",membershipDate:"2024-03-20",status:"actif"},
-  // {id:3,name:"Nadia Amrani",email:"n.amrani@yahoo.fr",phone:"0654321098",membershipDate:"2023-11-05",status:"actif"},
-  // {id:4,name:"Karim Ouazzani",email:"k.ouazzani@email.ma",phone:"0690123456",membershipDate:"2024-06-10",status:"inactif"},
+//==================================function useEmprunts ===========================================
+const apiEmprunts = "http://127.0.0.1:8000/api/emprunts"
+export  function  useEmprunts(){
+  const [emprunts, setEmprunts] = useState([]);
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await axios.get(apiEmprunts);
+        const mapped = res.data.map(b => ({
+          id: b.id,
+          livre:b.livre,
+          adherent: b.adherent ?? "",
+          date_emprunt:b.date_emprunt ?? '',
+          date_retour_prevue: b.date_retour_prevue ?? "",
+          date_retour_effective: b.date_retour_effective ,
+          status:b.status,
+          retard:b.retard
+         }));
 
-export const initLoans = [
-  {id:1,bookId:1,memberId:1,borrowDate:"2025-02-01",dueDate:"2025-02-15",returnDate:null,status:"actif"},
-  {id:2,bookId:3,memberId:2,borrowDate:"2025-01-20",dueDate:"2025-02-03",returnDate:null,status:"retard"},
-  {id:3,bookId:4,memberId:3,borrowDate:"2025-01-10",dueDate:"2025-01-24",returnDate:"2025-01-22",status:"retourné"},
-  {id:4,bookId:5,memberId:1,borrowDate:"2025-02-10",dueDate:"2025-02-24",returnDate:null,status:"actif"},
-];
+        setEmprunts(mapped);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+ 
+
+  // ➕ ADD
+   const addEmprunts = async (form) => {
+    try{
+     const payload = {
+      id: form.id,
+      livre:form.livre,
+      adherent: form.adherent ?? "",
+      date_emprunt:form.date_emprunt ?? '',
+      date_retour_prevue: form.date_retour_prevue ?? "",
+      };
+    const res = await axios.post(
+      apiEmprunts,
+      payload
+    );
+
+    setEmprunts(prev => [...prev, res.data]); 
+  } catch (err) {
+    console.error("Erreur add adherent :", err.response?.data || err);
+  }
+  };
+ 
+
+  // ✏️ UPDATE
+  const updateEmprunts = async (id,form) => {
+  try {
+     console.log(form)
+     const res = await axios.put(
+      `${apiEmprunts}/${id}`,form
+      // {
+      //   id: form.id,
+      //   livre:form.livre,
+      //   adherent: form.adherent ?? "",
+      //   date_emprunt:form.date_emprunt ?? '',
+      //   date_retour_prevue: form.date_retour_prevue ?? "",
+      //   date_retour_effective: form.date_retour_effective ?? null
+      // }
+    );
+
+    // ✅ Update state avec la réponse du backend
+    setEmprunts(prev =>
+      prev.map(b =>
+        b.id === id ? res.data : b
+      )
+    );
+  } catch (err) {
+    console.error("Erreur update adherent :", err.response?.data || err);
+  }
+  };
+
+  // 🗑️ DELETE
+  const deleteEmprunts = async (id) => {
+  try {
+    await axios.delete(`${apiEmprunts}/${id}`);
+
+    setEmprunts(prev => prev.filter(b => b.id !== id));
+   } catch (err) {
+     console.error(err.response?.data || err.message);
+  }
+};
+
+  return { emprunts, addEmprunts, updateEmprunts, deleteEmprunts };
+
+} 
+ 
