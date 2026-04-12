@@ -1,21 +1,29 @@
+// import '../css/dashbord.css';
+import imgBook from '../images/books-bl.png';
+import imgAdh from '../images/people-bl.png';
+import imgEmp from '../images/give-book-bl.png';
+import imgsta from '../images/status.png';
+import { useEmprunts } from '../data/databese';
+
 export default function Dashboard({books,members,loans}){
-  const totalBooks=books.reduce((s,b)=>s+b.qte,0);
+  const totalBooks=books.reduce((s,b)=>s+b.qte,1);
   const available=books.reduce((s,b)=>s+b.disponibilite,0);
-  const borrowed=totalBooks-available;
+  const borrowed = totalBooks-available;
   const overdue=loans.filter(l=>l.status==="retard").length;
   const monthly=[{m:"Sep",v:12},{m:"Oct",v:18},{m:"Nov",v:15},{m:"Déc",v:8},{m:"Jan",v:22},{m:"Fév",v:14}];
   const maxV=Math.max(...monthly.map(d=>d.v));
   const recentLoans=[...loans].reverse().slice(0,4);
+  const emprunt = loans.filter(l=>l.status === 'active').length; ; 
   return (
     <div>
       <div className="stats-grid">
-        {[["📚","Total Livres",totalBooks],["👥","Adhérents",members?.length || 0],["✅","Disponibles",available],["📤","Empruntés",borrowed]].map(([ic,lb,vl])=>(
-          <div key={lb} className="stat-card"><div className="stat-icon">{ic}</div><div className="stat-val">{vl}</div><div className="stat-lbl">{lb}</div></div>
+        {[[imgBook , "Total Livres", totalBooks ], [ imgAdh, "Adhérents", members?.length || 0 ], [ imgsta, "Disponibles", available ], [ imgEmp, "Empruntés", emprunt]].map(([ic,lb,vl])=>(
+          <div key={lb} className="stat-card"><img className="stat-icon" style={{width:'35px'}}  src={ic} alt={lb}/><div className="stat-val">{vl}</div><div className="stat-lbl">{lb}</div></div>
         ))}
       </div>
       <div className="dash-grid">
         <div className="dash-card">
-          <h3>📈 Emprunts par mois</h3>
+          <h3>Emprunts par mois</h3>
           <div className="bar-chart">
             {monthly.map(d=>(
               <div key={d.m} className="bar-wrap">
@@ -27,18 +35,18 @@ export default function Dashboard({books,members,loans}){
           </div>
         </div>
         <div className="dash-card">
-          <h3>🕐 Derniers Emprunts</h3>
+          <h3>Derniers Emprunts</h3>
           {recentLoans.map(l=>{
-            const bk=books?.find(b=>b.id===l.bookId);
-            const mb=members?.find(m=>m.id===l.memberId);
+            // const bk=books?.find(b=>b.id===l.bookId);
+            // const mb=members?.find(m=>m.id===l.memberId);
             return (
               <div key={l.id} className="r-item">
-                <div className={`r-icon ${l.status==="retard"?"ic-loan":"ic-book"}`}>{l.status==="retourné"?"✅":l.status==="retard"?"⚠️":"📖"}</div>
+                <div className={`r-icon ${l.status==="retard"?"ic-loan":"ic-book"}`}>{l.status ==="Retourner"?"✅":l.status === "retard"?"⚠️":"📖"}</div>
                 <div style={{flex:1}}>
-                  <div style={{fontWeight:600,fontSize:".87rem"}}>{bk?.title}</div>
-                  <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{mb?.nom} · {l.borrowDate}</div>
+                  <div style={{fontWeight:600,fontSize:".87rem"}}>{l.livre}</div>
+                  <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{l.adherent} · {l.date_emprunt}</div>
                 </div>
-                <span className={`badge ${l.status=== 1?"b-active":l.status==="retard"?"b-over":"b-ret"}`}>{l.status=== 1?"Actif":l.status==="retard"?"Retard":"Retourné"}</span>
+                <span className={`badge ${l.status=== "active"?"b-active":l.status==="retard"?"b-over":"b-ret"}`}>{l.status=== "active"?"Active":l.status==="retard"?"Retard":"Retourné"}</span>
               </div>
             );
           })}

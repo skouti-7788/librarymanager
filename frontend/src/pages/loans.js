@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useEmprunts } from "../data/databese";
+import axios from "../api/axois";
 
 export default function Loans({ loans, setLoans,setMembers, books, setBooks, members, showToast }) {
   const { addEmprunts, updateEmprunts, deleteEmprunts } = useEmprunts();
@@ -8,6 +9,9 @@ export default function Loans({ loans, setLoans,setMembers, books, setBooks, mem
   const [searsh,setSearsh] = useState('');
   const [okDel,setOkDel] = useState(false);
   const [update,setUpdate] = useState({});
+  const [updateStau,setUpdateStu] = useState({})
+  // const [sta,setSta] = useState(false)
+  // console.log(updateStau)
   const [form,setForm] = useState(
         {livre:'',
          adherent:'',
@@ -15,11 +19,39 @@ export default function Loans({ loans, setLoans,setMembers, books, setBooks, mem
          date_retour_prevue:'',
          date_retour_effective: null,
          })
-         console.log(update.retard)
+        //  console.log(update.retard)
+ 
   const hendleAdd = ()=>{
         addEmprunts(form)
         setLoans([...loans,form])
+      
   }
+  const checkdate = async (id,date_retour_prevue,date_emprunt) => {
+    try{ console.log(id)
+
+      const res = await axios.post('/emprunts/check',
+        {id:id, date_retour_prevue: date_retour_prevue,date_emprunt:date_emprunt});
+      // console.log(res.data)
+      setUpdateStu(res.data)
+       
+    }catch(err){
+         console.error(err)  
+    }
+    
+  };
+  console.log(loans)
+  const verifidate = loans.filter((l)=> new Date() > new Date(l.date_retour_prevue)&&!['retard','Retourner'].includes(l.status)) || false
+  console.log(verifidate) 
+  useEffect(()=>{
+  if(verifidate.length > 0 ){
+    verifidate?.map((l)=> 
+    checkdate(l.id,l.date_retour_prevue,l.date_emprunt));
+     
+  }
+    // fetchEmprunts()
+  },[loans]) 
+ 
+   
   const retourner = (id,l)=>{
         const retour_prevue = new Date(l.date_retour_prevue);
         const today = new Date();
@@ -51,7 +83,7 @@ export default function Loans({ loans, setLoans,setMembers, books, setBooks, mem
         setOkDel(false)
   }
   const filterSearsh = loans.filter((l)=> l.adherent.toLowerCase().includes(searsh) || l.livre.toLowerCase().includes(searsh))
-  console.log(filterSearsh)
+  // console.log(filterSearsh)
   return (
     <div>
       {/* ── Card ── */}bonsoir professeur Houcine j'ai fini que exercice 5 et push dan
@@ -101,8 +133,8 @@ export default function Loans({ loans, setLoans,setMembers, books, setBooks, mem
                     <td>{l.date_emprunt} </td>
                     <td>{l.date_retour_prevue} </td>
                     <td>{l.date_retour_effective}</td>
-                    <td>{l.retard}</td>
-                    <td> <span> {l.status} </span> </td>
+                    <td>{l.retard }</td>
+                    <td> <span> {l.status   } </span> </td>
                     <td>
                       <div className="row-acts">
                           {l.status !== 'Retourner'&&
@@ -136,7 +168,7 @@ export default function Loans({ loans, setLoans,setMembers, books, setBooks, mem
               >
                 <option value="">-- Sélectionner --</option>
                    {books.map((b)=>
-                    loans.find((l)=>l.livre === b.titre)?'':<option key={b.id} value={b.titre}>{b.titre}</option>)}
+                    loans.find((l)=>l.livre === b.title)?'':<option key={b.id} value={b.title}>{b.title}</option>)}
                </select>
             </div>
 

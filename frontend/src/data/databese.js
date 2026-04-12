@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from  "axios";
+import axios  from "../api/axois";
 export  const CATS = ["Roman","Science","Histoire","Informatique","Philosophie","Art","Jeunesse","Biographie"];
 export default function useBooks() {
   const [book, setBooks] = useState([]);
@@ -7,7 +7,7 @@ export default function useBooks() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/livres");
+        const res = await axios.get("/livres");
 
         // const mapped = res.data.map(b => ({
         //   id: b.id,
@@ -45,7 +45,7 @@ export default function useBooks() {
       status: form.status 
     };
     const res = await axios.post(
-      "http://127.0.0.1:8000/api/livres",
+      "/livres",
       payload
     );
 
@@ -56,7 +56,7 @@ export default function useBooks() {
   const updateBook = async (id, form) => {
   try {
     const res = await axios.put(
-      `http://127.0.0.1:8000/api/livres/${id}`,
+      `/livres/${id}`,
       {
         titre: form.titre,
         auteur: form.auteur,
@@ -84,7 +84,7 @@ export default function useBooks() {
   // 🗑️ DELETE
   const deleteBook = async (id) => {
   try {
-    await axios.delete(`http://127.0.0.1:8000/api/livres/${id}`);
+    await axios.delete(`/livres/${id}`);
 
     setBooks(prev => prev.filter(b => b.id !== id));
    } catch (err) {
@@ -100,7 +100,7 @@ export   function useAdherents() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await axios.get("http://127.0.0.1:8000/api/adherents");
+        const res = await axios.get("/adherents");
         const mapped = res.data.map(b => ({
           id: b.id,
           livre:b.livre ?? "",
@@ -126,7 +126,7 @@ export   function useAdherents() {
    const addAdherent = async (form) => {
     try{
     const res = await axios.post(
-      "http://127.0.0.1:8000/api/adherents",
+      "/adherents",
       {
       nom: form.nom,
       livre: form.livre,
@@ -150,7 +150,7 @@ export   function useAdherents() {
   try {
     console.log(form)
     const res = await axios.put(
-      `http://127.0.0.1:8000/api/adherents/${id}`,
+      `/adherents/${id}`,
       {
         nom: form.nom,
         livre: form.livre,
@@ -177,7 +177,7 @@ export   function useAdherents() {
   // 🗑️ DELETE
   const deleteAdherent = async (id) => {
   try {
-    await axios.delete(`http://127.0.0.1:8000/api/adherents/${id}`);
+    await axios.delete(`/adherents/${id}`);
 
     setAdherent(prev => prev.filter(b => b.id !== id));
    } catch (err) {
@@ -187,11 +187,11 @@ export   function useAdherents() {
   return { Adherent, addAdherent, updateAdherent, deleteAdherent };
 }
 //==================================function useEmprunts ===========================================
-const apiEmprunts = "http://127.0.0.1:8000/api/emprunts"
+const apiEmprunts = "/emprunts"
 export  function  useEmprunts(){
   const [emprunts, setEmprunts] = useState([]);
-  useEffect(() => {
-    const fetchBooks = async () => {
+  
+    const fetchEmprunts = async () => {
       try {
         const res = await axios.get(apiEmprunts);
         const mapped = res.data.map(b => ({
@@ -210,8 +210,8 @@ export  function  useEmprunts(){
         console.error("Fetch error:", err);
       }
     };
-
-    fetchBooks();
+  useEffect(() => {
+    fetchEmprunts();
   }, []);
  
 
@@ -275,7 +275,7 @@ export  function  useEmprunts(){
   }
 };
 
-  return { emprunts, addEmprunts, updateEmprunts, deleteEmprunts };
+  return { emprunts,fetchEmprunts, addEmprunts, updateEmprunts, deleteEmprunts };
 
 } 
  

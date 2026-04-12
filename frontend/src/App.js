@@ -7,6 +7,10 @@ import Members from "./pages/mambers";
 import Loans from "./pages/loans";
 import Login from "./pages/login";
 import Toasts from "./components/toasts";
+import imgdach from './images/dashboard.png'
+import imgBook from './images/books.png'
+import imgAdh from './images/people.png'
+import imgEmp from './images/give-book.png'
 import "./style.css";
 export default function App(){
   const {book} = useBooks();
@@ -32,10 +36,10 @@ export default function App(){
   },[]);
 
   const nav=[
-    {id:"dashboard",label:"Tableau de bord",icon:"🏠"},
-    {id:"books",label:"Livres",icon:"📚"},
-    {id:"members",label:"Adhérents",icon:"👥"},
-    {id:"loans",label:"Emprunts",icon:"📤"},
+    {id:"dashboard",label:"Tableau de bord",icon:imgdach},
+    {id:"books",label:"Livres",icon:imgBook},
+    {id:"members",label:"Adhérents",icon:imgAdh},
+    {id:"loans",label:"Emprunts",icon:imgEmp},
   ];
   const titles={dashboard:"Tableau de Bord",books:"Catalogue des Livres",members:"Gestion des Adhérents",loans:"Gestion des Emprunts"};
   const today=new Date().toLocaleDateString("fr-FR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
@@ -46,12 +50,12 @@ export default function App(){
     <>
       <div className="app">
         <aside className="sidebar">
-          <div className="sb-logo"><h2>📚 LibraryManager</h2><span>Administration</span></div>
+          <div className="sb-logo"><h2> LibraryManager</h2></div>
           <nav className="sb-nav">
             <div className="nav-section">Navigation</div>
             {nav.map(n=>(
               <div key={n.id} className={`nav-item${page===n.id?" active":""}`} onClick={()=>setPage(n.id)}>
-                <span className="nav-icon">{n.icon}</span>{n.label}
+                <img className="nav-icon" src={n.icon} title={n.label}/>{n.label}
               </div>
             ))}
           </nav>
@@ -60,7 +64,7 @@ export default function App(){
               <div className="avatar">AD</div>
               <div><span>Administrateur</span><small>admin@library.ma</small></div>
             </div>
-            <button className="btn-logout" onClick={()=>setAuth(false)}>🚪 Se déconnecter</button>
+            <button className="btn-logout" onClick={()=>setAuth(false)}> Se déconnecter</button>
           </div>
         </aside>
         <div className="main">
@@ -69,7 +73,7 @@ export default function App(){
             <span className="topbar-date">{today}</span>
           </header>
           <main className="page">
-            {page==="dashboard"&&<Dashboard books={books} members={members} loans={loans}/>}
+            {page==="dashboard"&&<Dashboard books={books} imgBook={imgBook} imgAdh={imgAdh} imgEmp={imgEmp} imgdach={imgdach} members={members} loans={loans}/>}
             {page==="books"&&<Books books={books} setBooks={setBooks} showToast={showToast}/>}
             {page==="members"&&<Members setMembers={setMembers}members={members} books={books} xshowToast={showToast}/>}
             {page==="loans"&&<Loans loans={loans} setLoans={setLoans} books={books} setBooks={setBooks} members={members} showToast={showToast}/>}

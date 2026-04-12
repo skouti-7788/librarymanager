@@ -23,6 +23,7 @@ Route::get('/emprunts',[EmpruntsController::class, 'index']);
 Route::post('/emprunts',[EmpruntsController::class, 'ajouter']);
 Route::put('/emprunts/{id}',[EmpruntsController::class, 'modify']);
 Route::delete('/emprunts/{id}',[EmpruntsController::class, 'delete']);
+Route::post('/emprunts/check',[EmpruntsController::class, 'checkdate']);
 
 Route::get('/users', [UsersController::class, 'index']);
 Route::post('/register', [UsersController::class, 'register']);
