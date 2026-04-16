@@ -5,6 +5,7 @@ import imgEmp from '../images/give-book-bl.png';
 import imgsta from '../images/status.png';
 import { useEmprunts } from '../data/databese';
 
+
 export default function Dashboard({books,members,loans}){
   const totalBooks=books.reduce((s,b)=>s+b.qte,1);
   const available=books.reduce((s,b)=>s+b.disponibilite,0);
@@ -14,6 +15,7 @@ export default function Dashboard({books,members,loans}){
   const maxV=Math.max(...monthly.map(d=>d.v));
   const recentLoans=[...loans].reverse().slice(0,4);
   const emprunt = loans.filter(l=>l.status === 'active').length; ; 
+  const { checkdate} = useEmprunts()
   return (
     <div>
       <div className="stats-grid">
@@ -39,9 +41,12 @@ export default function Dashboard({books,members,loans}){
           {recentLoans.map(l=>{
             // const bk=books?.find(b=>b.id===l.bookId);
             // const mb=members?.find(m=>m.id===l.memberId);
+            // const isStatus1 = new Date() > new Date(l.date_retour_prevue);
+             console.log(l.status)
+            checkdate(l.id,l.date_retour_prevue,l.date_emprunt);
             return (
               <div key={l.id} className="r-item">
-                <div className={`r-icon ${l.status==="retard"?"ic-loan":"ic-book"}`}>{l.status ==="Retourner"?"✅":l.status === "retard"?"⚠️":"📖"}</div>
+                <div className={`r-icon ${l.status==="retard"?"ic-loan":"ic-book"}`}>{l.status === "Retourner"?"✅":l.status  === "retard"?"⚠️":"📖"}</div>
                 <div style={{flex:1}}>
                   <div style={{fontWeight:600,fontSize:".87rem"}}>{l.livre}</div>
                   <div style={{fontSize:".77rem",color:"var(--brown-mid)"}}>{l.adherent} · {l.date_emprunt}</div>

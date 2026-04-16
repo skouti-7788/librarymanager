@@ -52,7 +52,7 @@ export default function App(){
         <aside className="sidebar">
           <div className="sb-logo"><h2> LibraryManager</h2></div>
           <nav className="sb-nav">
-            <div className="nav-section">Navigation</div>
+            {/* <div className="nav-section">Navigation</div> */}
             {nav.map(n=>(
               <div key={n.id} className={`nav-item${page===n.id?" active":""}`} onClick={()=>setPage(n.id)}>
                 <img className="nav-icon" src={n.icon} title={n.label}/>{n.label}

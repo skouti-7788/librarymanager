@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import axios  from "../api/axois";
+import {SetUpdateStu}   from '../app/redux/emruntsSlice';
+import { useDispatch } from 'react-redux';
 export  const CATS = ["Roman","Science","Histoire","Informatique","Philosophie","Art","Jeunesse","Biographie"];
 export default function useBooks() {
   const [book, setBooks] = useState([]);
-
+  
   useEffect(() => {
     const fetchBooks = async () => {
       try {
@@ -190,7 +192,7 @@ export   function useAdherents() {
 const apiEmprunts = "/emprunts"
 export  function  useEmprunts(){
   const [emprunts, setEmprunts] = useState([]);
-  
+  const dispatch = useDispatch();
     const fetchEmprunts = async () => {
       try {
         const res = await axios.get(apiEmprunts);
@@ -203,9 +205,12 @@ export  function  useEmprunts(){
           date_retour_effective: b.date_retour_effective ,
           status:b.status,
           retard:b.retard
+          
          }));
 
         setEmprunts(mapped);
+        // checkdate(form.id,form.date_retour_prevue,form.date_emprunt)
+
       } catch (err) {
         console.error("Fetch error:", err);
       }
@@ -229,8 +234,10 @@ export  function  useEmprunts(){
       apiEmprunts,
       payload
     );
-
+    
     setEmprunts(prev => [...prev, res.data]); 
+    checkdate(form.id,form.date_retour_prevue,form.date_emprunt)
+
   } catch (err) {
     console.error("Erreur add adherent :", err.response?.data || err);
   }
@@ -259,10 +266,25 @@ export  function  useEmprunts(){
         b.id === id ? res.data : b
       )
     );
+    checkdate(form.id,form.date_retour_prevue,form.date_emprunt)
   } catch (err) {
     console.error("Erreur update adherent :", err.response?.data || err);
   }
   };
+  // chekdate
+   const checkdate = async (id,date_retour_prevue,date_emprunt) => {
+      try{ console.log(id)
+
+        const res = await axios.post('/emprunts/check',
+          {id:id, date_retour_prevue: date_retour_prevue,date_emprunt:date_emprunt});
+        // console.log(res.data)
+         dispatch(SetUpdateStu(res.data))
+        
+      }catch(err){
+          console.error(err)  
+      }
+      
+    };
 
   // 🗑️ DELETE
   const deleteEmprunts = async (id) => {
@@ -275,7 +297,7 @@ export  function  useEmprunts(){
   }
 };
 
-  return { emprunts,fetchEmprunts, addEmprunts, updateEmprunts, deleteEmprunts };
+  return { emprunts,checkdate,fetchEmprunts, addEmprunts, updateEmprunts, deleteEmprunts };
 
 } 
  
