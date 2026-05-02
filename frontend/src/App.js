@@ -4,6 +4,7 @@ import {useAdherents, useEmprunts} from "./data/databese"
 import Dashboard from "./pages/dashbord";
 import Books from "./pages/books";
 import Members from "./pages/mambers";
+import Blacklist from "./pages/blacklist";
 import Loans from "./pages/loans";
 import Login from "./pages/login";
 import Toasts from "./components/toasts";
@@ -20,12 +21,13 @@ export default function App(){
   const [page,setPage]=useState("dashboard");
   const [books,setBooks]=useState([]);
   const [members,setMembers]=useState([]);
+  // const [blacklist,setBlacklist]=useState([]);
   useEffect(()=>{
   if(book) setBooks(book);
   if(Adherent) setMembers(Adherent);
   if(emprunts) setLoans(emprunts);
   },[book,Adherent,emprunts]);
- 
+  
   const [loans,setLoans]=useState([]);
   const [toasts,setToasts]=useState([]);
   
@@ -40,8 +42,9 @@ export default function App(){
     {id:"books",label:"Livres",icon:imgBook},
     {id:"members",label:"Adhérents",icon:imgAdh},
     {id:"loans",label:"Emprunts",icon:imgEmp},
+    {id:"blacklist",label:"Liste Noire",icon:imgEmp},
   ];
-  const titles={dashboard:"Tableau de Bord",books:"Catalogue des Livres",members:"Gestion des Adhérents",loans:"Gestion des Emprunts"};
+  const titles={dashboard:"Tableau de Bord",books:"Catalogue des Livres",members:"Gestion des Adhérents",loans:"Gestion des Emprunts",blacklist:"Liste Noire"};
   const today=new Date().toLocaleDateString("fr-FR",{weekday:"long",year:"numeric",month:"long",day:"numeric"});
 
   if(!auth) return <><Login onLogin={()=>setAuth(true)}/><Toasts toasts={toasts}/></>;
@@ -75,8 +78,9 @@ export default function App(){
           <main className="page">
             {page==="dashboard"&&<Dashboard books={books} imgBook={imgBook} imgAdh={imgAdh} imgEmp={imgEmp} imgdach={imgdach} members={members} loans={loans}/>}
             {page==="books"&&<Books books={books} setBooks={setBooks} showToast={showToast}/>}
-            {page==="members"&&<Members setMembers={setMembers}members={members} books={books} xshowToast={showToast}/>}
+            {page==="members"&&<Members setMembers={setMembers} members={members} books={books} showToast={showToast}/>}
             {page==="loans"&&<Loans loans={loans} setLoans={setLoans} books={books} setBooks={setBooks} members={members} showToast={showToast}/>}
+            {page==="blacklist"&&<Blacklist loans={loans} members={members} showToast={showToast}/>}
           </main>
         </div>
       </div>

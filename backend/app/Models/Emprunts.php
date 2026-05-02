@@ -6,6 +6,10 @@ class Emprunts extends Model
 {
     protected  $table = 'emprunts';
     protected  $fillable =[ 
-    'livre' ,'adherent' ,'date_emprunt' ,'date_retour_prevue' ,'date_retour_effective','status','retard'];
+    'livre','livre_id' ,'adherent' ,'date_emprunt' ,'date_retour_prevue' ,'date_retour_effective','status','retard','adherent_id'];
     public $timestamps = false;
+    public function livre()
+    {
+        return $this->belongsTo(Livres::class);
+    }
 }

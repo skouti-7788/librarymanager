@@ -29,8 +29,7 @@ class LivresController extends Controller
        
     'title'         => 'required|string|max:255',
     'author'        => 'required|string|max:255',
-    'image'         => 'nullable|string|max:255',
-    'category'      => 'nullable|string|max:100',
+    'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // تغيير إلى image    'category'      => 'nullable|string|max:100',
     'annee'         => 'nullable|integer|min:1|max:' . date('Y'),
     'pages'         => 'nullable|integer|min:1',
     'fileSize'      => 'nullable|string|max:255',
@@ -43,7 +42,12 @@ class LivresController extends Controller
     'disponibilite' => 'required|integer|in:0,1',
     'status'        => 'required|string|max:50',
     ]);
-
+    if ($request->hasFile('image')) {
+        // تخزين الصورة في storage/app/public/books
+        $path = $request->file('image')->store('books', 'public');
+        // حفظ المسار النسبي فقط (مثل: books/name.png)
+        $validated['image'] = $path;
+    }
     $livre = Livres::create($validated);
 
     return response()->json($livre, 201);

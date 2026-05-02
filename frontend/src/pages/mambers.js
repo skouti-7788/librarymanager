@@ -27,7 +27,7 @@ export default function Members({members,setMembers,showToast,books}){
     close();
   };
   const del=()=>{setMembers(p=>p.filter(m=>m.id!==sel.id));showToast("Adhérent supprimé","success");close()};
-
+  console.log(filtered)
   return (
     <div>
       <div className="t-card">
@@ -42,7 +42,7 @@ export default function Members({members,setMembers,showToast,books}){
           <thead>
             <tr>
               <th>Nom complet</th>
-              <th>Livre</th>
+              {/* <th>Livre</th> */}
               <th>Email</th>
               <th>Téléphone</th>
               <th>Date d'adhésion</th>
@@ -63,10 +63,12 @@ export default function Members({members,setMembers,showToast,books}){
             filtered.map(m=>(
               <tr key={m.id}>
                 <td><strong>{m.nom}</strong></td>
-                <td><strong>{m.livre}</strong></td>
+                {/* <td><strong>{m.livre}</strong></td> */}
                 <td>{m.email}</td><td>{m.phone}</td>
                 <td>{m.datadahestion}</td>
-                <td><span className={`badge ${m.status=== 1?"b-active":"b-borrow"}`}>{m.status=== 1?"Actif":"Inactif"}</span></td>
+                <td><span className={`badge ${m.status=== "active"?"b-active":m.status === "inactive"?"b-borrow":m.status === "suspended"?"b-suspended":"b-active"}`}>{
+                    m.status === "active" ? "Active" : m.status === "inactive" ? "Inactive" : m.status === "suspended" ? "Emprunt en cours" :  "Active"
+                }</span></td>
                 <td>
                   <div className="row-acts">
                     <button className="bi bi-e" onClick={()=>{openEdit(m)}}>✏️</button>
@@ -95,14 +97,15 @@ export default function Members({members,setMembers,showToast,books}){
             <div className="form-group">
               <label>livre</label>
               <select value={form.livre} onChange={e=>setForm(p=>({...p,livre:e.target.value}))}>
-                {books.map((b)=><option value={b.titre}>{b.titre}</option>)}
+                {books.map((b)=><option value={b.title}>{b.title}</option>)}
               </select>
             </div>
             <div className="form-group">
               <label>Statut</label>
               <select value={form.status} onChange={e=>setForm(p=>({...p,status:e.target.value}))}>
-                <option value="actif">Actif</option>
-                <option value="inactif">Inactif</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="suspended">Emprunt en cours</option>
               </select>
             </div>
             <div className="modal-f">

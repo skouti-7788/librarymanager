@@ -9,13 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    // php artisan make:migration create_descriptions_table
     public function up(): void
     {
-        Schema::create('opinions', function (Blueprint $table) {
+        Schema::create('descriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('livre_id')->constrained()->onDelete('cascade');
-            $table->text('opinion');
+            $table->foreignId('livre_id')->constrained('livres')->onDelete('cascade');
+            $table->text('description');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('opinions');
+        Schema::dropIfExists('descriptions');
     }
 };

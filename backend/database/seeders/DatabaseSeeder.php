@@ -2,24 +2,30 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. قم بتعطيل هذا السطر (السطر رقم 20 الذي يسبب الخطأ)
+        // User::factory()->create([...]); 
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // 2. إذا كنت تريد إنشاء مستخدم تجريبي، افعل ذلك يدوياً بالأعمدة الصحيحة:
+        User::create([
+            'username' => 'Admin',
+            'email' => 'admin@example.com',
+            'password' => bcrypt('password123'),
+        ]);
+
+        // 3. استدعاء Seeder الكتب (الـ 50 كتاباً)
+        $this->call([
+            LivreSeeder::class,
+            AdherentsSeeder::class,
+            OpinionSeeder::class,
+            DescriptionSeeder::class,
+
         ]);
     }
 }

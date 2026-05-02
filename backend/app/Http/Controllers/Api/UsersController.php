@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Adherents;
 // use Symfony\Component\HttpFoundation\Cookie;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
@@ -24,9 +25,9 @@ class UsersController extends Controller
         'username' => 'required|string|max:100',
         'email'    => 'required|email|unique:users,email',
         'password' => 'required|string|min:8|confirmed',
-        'favorite' => 'required|boolean',
+        // 'favorite' => 'required|boolean',
     ]);
-    dd($validated);
+    // dd($validated);
     if(!$validated) {
          return response()->json([
             'message' => 'Les champs sont vides',
@@ -44,10 +45,11 @@ class UsersController extends Controller
         'username' => $validated['username'],
         'email'    => $validated['email'],
         'password' => Hash::make($validated['password']), 
-        'favorite' => $validated['favorite'],
+        // 'favorite' => $validated['favorite'],
         ]
     );
     }
+    
     return response()->json([
         'message' => 'Utilisateur créé avec succès',
         'user' => $user
@@ -80,7 +82,16 @@ public function login(Request $request)
         'iat' => time(),
         'exp' => time() + 3600 
     ];
+    
+    
     $token = JWT::encode($payload, env('JWT_SECRET'), 'HS256');
+    $adherents = Adherents::where('email', $request->email)->first();
+    if($adherents){
+    $adherents->update([
+        'status'=> 'active',
+        'user_id' => $user->id,
+        ]);
+     }
     return response()->json([
         'message' => 'Login success',
         'token' => $token,
@@ -90,10 +101,8 @@ public function login(Request $request)
  public function logout(Request $request)
     {
         Auth::logout();
-        // $request->session()->invalidate();      
-        // $request->session()->regenerateToken(); 
-         return response()->json([
-        'message' => 'Logged out'
+        return response()->json([
+         'message' => 'Logged out'
         ]);
         // return response()->json(['message' => 'Logged out'])
         // ->withCookie(cookie()->forget('laravel_session')); 

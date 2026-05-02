@@ -10,17 +10,21 @@ export default function Books({books,setBooks,showToast}){
   const [form,setForm] = useState({
         titre:'',
         auteur:'',
-        isbn:'',
         categorie:'',
         annee:'',
+        pages:'',
+        fileSize:'',
+        extension:'',
+        book_rank:'',
+        showLiver:'',
+        prix:'',
         qte:0,
-        disponibilite:0,
         status:''
   });
   const [update,setUpdate] = useState({});
   const [showSupr,setShowSupr] = useState(false);
   const [idDel,setIdDel] = useState(null)
-  const [dispon,setDispon] = useState('')
+  const [statusSearch,setStatusSearch] = useState('')
   const [categorie,setCategorie] = useState('')
   const hendleAdd = ()=>{
         addBook(form)
@@ -42,28 +46,28 @@ export default function Books({books,setBooks,showToast}){
         setUpdate({
         titre:book.titre,
         auteur:book.auteur,
-        isbn:book.isbn,
         categorie:book.categorie,
         annee:book.annee,
+        pages:book.pages,
+        fileSize:book.fileSize,
+        extension:book.extension,
+        book_rank:book.book_rank,
+        showLiver:book.showLiver,
+        prix:book.prix,
         qte:book.qte,
-        disponibilite:book.disponibilite,
         status:book.status
         })
         setUp(true)
         setShowBooks(true)
-        setBooks([...books,update])
   }
   const saveUpdate =()=>{
         updateBook(idBook,update)
         setBooks(books.map((b)=>b.id === idBook?  update:b));
-
   }
-  const filterBooks = books.filter((b)=> (b.title.toLowerCase().includes(searsh.toLocaleLowerCase()) || b.author.toLowerCase().includes(searsh.toLocaleLowerCase())) 
-        && (b.category === categorie || categorie === '') && (b.disponibilite === Number(dispon )|| dispon === ''));
+  const filterBooks = books.filter((b)=> (b.title.toLowerCase().includes(searsh.toLocaleLowerCase()) || b.author.toLowerCase().includes(searsh.toLocaleLowerCase()))
+        && (b.category === categorie || categorie === '') && (b.status === statusSearch || statusSearch === ''));
   const bookCategorie = [...new Set(books.map((b)=> b.category))]
-  // console.log(books.filter((b)=> b.disponibilite === dispon))
   const pages=Math.ceil(filterBooks.length/5);
-  // const paged=filtered.slice((page-1)*PER,page*PER);
   const pageNext = filterBooks.slice((page-1)*5,page*5);
   return (
     <div>
@@ -71,25 +75,25 @@ export default function Books({books,setBooks,showToast}){
         <div className="t-head">
           <h2>📚 Catalogue des Livres</h2>
           <div className="search-row">
-            <input 
+            <input
             value={searsh}
             onChange={(e)=>setSearsh(e.target.value)}
-            className="si" placeholder="Titre, auteur, ISBN…"  />
+            className="si" placeholder="Titre, auteur…"  />
             <select className="sel"  value={categorie}
-               onChange={(e)=>setCategorie(e.target.value)} 
+               onChange={(e)=>setCategorie(e.target.value)}
             >
               <option value="">Toutes catégories</option>
-              {bookCategorie.map((cat)=> <option value={cat}>{cat}</option>)}
+              {bookCategorie.map((cat)=> <option key={cat} value={cat}>{cat}</option>)}
             </select>
             <select className="sel"
-                value={dispon}
-                onChange={(e)=>setDispon(e.target.value)}
+                value={statusSearch}
+                onChange={(e)=>setStatusSearch(e.target.value)}
             >
-              <option value="" > Toutes les disponibilités</option>
+              <option value="">Tous les statuts</option>
               <option value='1'>Disponible</option>
               <option value='0'>Indisponible</option>
             </select>
-            <button className="btn-add"  onClick={()=> setShowBooks(true)} >+ Ajouter</button>
+            <button className="btn-add"  onClick={()=>{setShowBooks(true);setUp(false);setForm({titre:'',auteur:'',categorie:'',annee:'',pages:'',fileSize:'',extension:'',book_rank:'',showLiver:'',prix:'',qte:0,status:''})}} >+ Ajouter</button>
           </div>
         </div>
         <table>
@@ -104,19 +108,18 @@ export default function Books({books,setBooks,showToast}){
                 <th>Taille du fichier</th>
                 <th>Extension</th>
                 <th>Date d'ajout</th>
-                <th>Note</th>
+                <th>Rang</th>
+                <th>Afficher le Livre</th>
                 <th>Prix</th>
-                <th>Affichage</th>
                 <th>Quantité</th>
-                <th>Disponibilité</th>
                 <th>Statut</th>
-                <th>Actions</th> 
+                <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-           
+
             {filterBooks.length === 0 ?(<tr>
-              <td colSpan="9">
+              <td colSpan="15">
                 <div className="empty">
                   <div className="ei">🔍</div>
                   <p>Aucun livre trouvé</p>
@@ -136,12 +139,11 @@ export default function Books({books,setBooks,showToast}){
                 <td>{b.fileSize}</td>
                 <td>{b.extension}</td>
                 <td>{b.creationDate}</td>
-                <td>{b.rank}</td>
-                <td>{b.prix} DH</td>
+                <td>{b.book_rank}</td>
                 <td>{b.showLiver}</td>
+                <td>{b.prix} DH</td>
                 <td>{b.qte}</td>
-                <td>{b.disponibilite === 1 ? "✔" : "❌"}</td>
-                <td>{b.status}</td>
+                <td>{b.status === "actif" ? "✔" : "❌"}</td>
                 <td>
                   <div className="row-acts">
                     <button onClick={() => hendleUpdate(b.id, b)}>✏️</button>
@@ -151,15 +153,12 @@ export default function Books({books,setBooks,showToast}){
               </tr>))}
            </tbody>
         </table>
-       
+
           <div className="pagi">
             {pages>1&&<div className="pagi">
               <span className="pinfo">{filterBooks.length} livre(s) · Page {page}/{pages}</span>
             {Array.from({length: pages},(_,i)=>i+1).map(p=>
             <button key={p} className={`pb${p===page?" active":""}`} onClick={()=>setPage(p)}>{p}</button>)}</div>}
-            {/* <span className="pinfo"> livre · Page  / </span> */}
-             
-            <button  ></button>
           </div>
       </div>
 
@@ -167,63 +166,96 @@ export default function Books({books,setBooks,showToast}){
         {showBooks&&<div className="overlay"  >
           <div className="modal"  >
             <div className="modal-h">
-              <h3> </h3>
+              <h3>{up ? 'Modifier le Livre' : 'Ajouter un Livre'}</h3>
               <button className="btn-x" onClick={()=> setShowBooks(false)} >✕</button>
             </div>
-            
-              <div   className="form-group">
-                <label> Titre</label>
+             <div className="grid2">
+              <div className="form-group">
+                <label>Titre</label>
                 <input type="text" value={up?update.titre:form.titre} onChange={(e)=>up?setUpdate({...update,titre:e.target.value}):setForm({...form,titre:e.target.value})} />
               </div>
-              <div   className="form-group">
-                <label> Auteur</label>
-                <input type="text"  value={up?update.auteur:form.auteur} onChange={(e)=>up?setUpdate({...update,auteur:e.target.value}):setForm({...form,auteur:e.target.value})}/>
-              </div>
-              <div   className="form-group">
-                <label> isbn</label>
-                <input type="text" value={up?update.isbn:form.isbn} onChange={(e)=>up?setUpdate({...update,isbn:e.target.value}):setForm({...form,isbn:e.target.value})} />
-              </div>
-            <div className="form-group">
-              <label>Catégorie</label>
-              <input type='text' value={up?update.categorie:form.categorie} onChange={(e)=>up?setUpdate({...update,categorie:e.target.value}):setForm({...form,categorie:e.target.value})}/> 
-                
-            </div>
-            <div className="grid2">
+              
               <div className="form-group">
-                <label>Quantité</label>
-                <input type="number" min="1" value={up?update.qte:form.qte} onChange={(e)=>up?setUpdate({...update,qte:e.target.value}):setForm({...form,qte:e.target.value})} />
+                <label>Auteur</label>
+                <input type="text" value={up?update.auteur:form.auteur} onChange={(e)=>up?setUpdate({...update,auteur:e.target.value}):setForm({...form,auteur:e.target.value})}/>
               </div>
+               </div>
+              <div className="grid2"> 
               <div className="form-group">
-                <label>Année</label>
-                <input type="text"  value={up?update.annee:form.annee} onChange={(e)=>up?setUpdate({...update,annee:e.target.value}):setForm({...form,annee:e.target.value})}/>
+                <label>Catégorie</label>
+                <input type='text' value={up?update.categorie:form.categorie} onChange={(e)=>up?setUpdate({...update,categorie:e.target.value}):setForm({...form,categorie:e.target.value})}/>
+              </div> 
+                <div className="form-group">
+                  <label>Année</label>
+                  <input type="text" value={up?update.annee:form.annee} onChange={(e)=>up?setUpdate({...update,annee:e.target.value}):setForm({...form,annee:e.target.value})}/>
+                </div> 
+                </div>
+                <div className="grid2">
+                <div className="form-group">
+                  <label>Pages</label>
+                  <input type="number" min="1" value={up?update.pages:form.pages} onChange={(e)=>up?setUpdate({...update,pages:e.target.value}):setForm({...form,pages:e.target.value})} />
+                </div>
+                <div className="form-group">
+                  <label>Taille du fichier</label>
+                  <input type="text" value={up?update.fileSize:form.fileSize} onChange={(e)=>up?setUpdate({...update,fileSize:e.target.value}):setForm({...form,fileSize:e.target.value})} />
+                </div>
+                </div>
+                 <div className="grid2">
+                <div className="form-group">
+                  <label>Extension</label>
+                  <input type="text" value={up?update.extension:form.extension} onChange={(e)=>up?setUpdate({...update,extension:e.target.value}):setForm({...form,extension:e.target.value})} />
+                </div>
+              
+                <div className="form-group">
+                  <label>Rang</label>
+                  <input type="number" min="1" value={up?update.book_rank:form.book_rank} onChange={(e)=>up?setUpdate({...update,book_rank:e.target.value}):setForm({...form,book_rank:e.target.value})} />
+                </div>
+                </div>
+                 <div className="grid2">
+                <div className="form-group">
+                  <label>Afficher le Livre</label>
+                  <select value={up?update.showLiver:form.showLiver} onChange={(e)=>up?setUpdate({...update,showLiver:e.target.value}):setForm({...form,showLiver:e.target.value})}>
+                    <option value="">-- Choisir --</option>
+                    <option value="oui">Oui</option>
+                    <option value="non">Non</option>
+                  </select>
+                </div>
+             
+                <div className="form-group">
+                  <label>Prix (DH)</label>
+                  <input type="number" min="0" step="0.01" value={up?update.prix:form.prix} onChange={(e)=>up?setUpdate({...update,prix:e.target.value}):setForm({...form,prix:e.target.value})} />
+                </div>
+                 </div>
+              <div className="grid2">
+                <div className="form-group">
+                  <label>Quantité</label>
+                  <input type="number" min="0" value={up?update.qte:form.qte} onChange={(e)=>up?setUpdate({...update,qte:e.target.value}):setForm({...form,qte:e.target.value})} />
+                </div>
+              
+              {/* <div className="form-group">
+                <label>Statut</label>
+                <select value={up?update.status:form.status} onChange={(e)=>up?setUpdate({...update,status:e.target.value}):setForm({...form,status:e.target.value})}>
+                  <option value="">-- Choisir --</option>
+                  <option value='1'>dia</option>
+                  <option value="0">Inactif</option>
+                </select>
+              </div> */}
               </div>
-              <div className="form-group">
-                <label>Disponibilité</label>
-                <input type="number" min="0"  value={up?update.disponibilite:form.disponibilite} onChange={(e)=>up?setUpdate({...update,disponibilite:e.target.value}):setForm({...form,disponibilite:e.target.value})}/>
-              </div>
-              <div className="form-group">
-              <label>Status</label>
-              <select value={up?update.status:form.status} onChange={(e)=>up?setUpdate({...update,status:e.target.value}):setForm({...form,status:e.target.value})}> 
-                <option value='actif'>actif</option>
-                <option  value='inctif'>inctif</option>
-              </select>
-            </div>
-            </div>
             <div className="modal-f">
               <button className="btn-sec" onClick={()=> setShowBooks(false)} >Annuler</button>
-              <button className="btn-sub" onClick={()=>{if(up){saveUpdate()}else{hendleAdd()}}} >{up?'update':'ajoutre'}</button>
+              <button className="btn-sub" onClick={()=>{if(up){saveUpdate()}else{hendleAdd()}}} >{up?'Modifier':'Ajouter'}</button>
             </div>
-            
+
           </div>
-        </div>} 
-        
+        </div>}
+
         {showSupr&&<div className="overlay" >
           <div className="modal" >
             <div className="modal-h">
               <h3>Supprimer le Livre</h3>
               <button className="btn-x" onClick={()=> setShowSupr(false)}  >✕</button>
             </div>
-            <p className="confirm-txt">Supprimer <strong> </strong> ? Cette action est irréversible.</p>
+            <p className="confirm-txt">Supprimer ce livre ? Cette action est irréversible.</p>
             <div className="modal-f">
               <button className="btn-sec" onClick={()=> setShowSupr(false)}  >Annuler</button>
               <button className="btn-del" onClick={okDelete} >Supprimer</button>

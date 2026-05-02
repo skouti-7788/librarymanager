@@ -15,16 +15,18 @@ class EmpruntsController extends Controller
     }
    public function ajouter(Request $request)
    {
+ 
     $validated = $request->validate([
         'livre' => 'required ',
-        'adherent' => 'required ',
+        'livre_id' => 'nullable|integer|exists:livres,id',
         'date_emprunt' => 'required|date',
         'date_retour_prevue' => 'required|date',
         'date_retour_effective' => 'nullable|date',
         'status' => 'nullable|string',
-        'retard'=> 'nullable|string'
+        'retard'=> 'nullable|string',
+        'adherent_id' => 'nullable|integer|exists:adherents,id'
+
     ]);
-      
     $emprunts =  Emprunts::create($validated);
     return response()->json($emprunts, 201);
     }
@@ -35,12 +37,12 @@ class EmpruntsController extends Controller
     //  Validation
     $data = $request->validate([
         'livre' => 'required',
-        'adherent' => 'required',
+        'adherent_id' => 'required',
         'date_emprunt' => 'required|date',
         'date_retour_prevue' => 'required|date',
         'date_retour_effective' => 'nullable|date',
         'status' => 'nullable|string',
-        'retard'=> 'nullable|string'
+        'retard'=> 'nullable|string',
     ]);
     
     //  Update
@@ -54,23 +56,36 @@ class EmpruntsController extends Controller
     $validated = $request->validate([
         'id' => 'required|exists:emprunts,id',
         'date_retour_prevue' => 'required|date',
-         'date_emprunt'=> 'required|date',
+        'date_emprunt'=> 'required|date',
+        // 'adherent_id' => 'nullable|integer|exists:adherents,id'
+
          
         // 'retard' => 'required|string'
     ]);
     $emprunts = Emprunts::findOrFail($validated['id']);
-    // dd($validated['id'], $emprunts);
-    $datePrevue = Carbon::parse($validated['date_retour_prevue']);
-    $status = Carbon::now()->greaterThan($datePrevue) ? "retard" : "active";
-    $dateEmprunt = Carbon::parse($validated['date_emprunt']);
-    $retard =  $datePrevue->diffInDays($dateEmprunt);
-    // dd( $datePrevue,$status , $dateEmprunt, $retard );
-    $emprunts->update(['status' => $status,
-                        'retard'=> $retard,
-                      ]);
-    return response()->json(['status' => $status,
-                              'retard'=> $retard,
-                            'message' => 'add status',
+
+    $datePrevue = Carbon::parse($validated['date_retour_prevue'])->startOfDay();
+    $now = Carbon::now()->startOfDay();
+
+    // 1. Détermination du statut
+    $status = $now->gt($datePrevue) 
+        ? "retard" 
+        : ($now->isSameDay($datePrevue) ? "Retourner" : "active");
+
+   
+    $retard = $now->gt($datePrevue) ? (int)$now->diffInDays($datePrevue) : 0;// 
+    $emprunts->update([
+        'status' => $status,
+        'retard' => $retard,
+        'date_retour_effective' => $emprunts->status == "Retourner"? $now:null
+    ]);
+    // dd($status,$retard);
+    return response()->json([
+        'status'  => $emprunts->status,
+        'retard'  => $emprunts->retard,
+        'id' => $emprunts->id,
+        'date_retour_effective' => $emprunts->status == "Retourner"? $now:null,
+        'message' => 'Statut mis à jour avec succès',
     ]);
     }
     public function delete($id)

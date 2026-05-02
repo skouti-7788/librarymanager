@@ -1,24 +1,34 @@
   import { useState, useEffect } from "react";
   import { useEmprunts } from "../data/databese";
   import axios from "../api/axois";
-
+  import { useDispatch, useSelector } from "react-redux";
+  import { SetUpdateStu } from "../app/redux/emruntsSlice";
+import { useBlackliste } from "../data/dataBlackliste";
   export default function Loans({ loans, setLoans,setMembers, books, setBooks, members, showToast }) {
-    const { addEmprunts, updateEmprunts, deleteEmprunts } = useEmprunts();
+    const {fetchEmprunts, addEmprunts, updateEmprunts, deleteEmprunts } = useEmprunts();
+    const {checkBlackliste} = useBlackliste()
     const [showadd,setShowAdd] = useState(false);
     const [idDel,setIdDel] = useState('')
     const [searsh,setSearsh] = useState('');
     const [okDel,setOkDel] = useState(false);
     const [update,setUpdate] = useState({});
+    const [adherentId,setAdherentId] = useState(null);
+    const setUpdateStu = useSelector((state) => state.emprunt.setUpdateStu);
+    const reduxloans = useSelector((state) => state.emprunt.loans);
+
+    const dispatch = useDispatch();
     // const [updateStau,setUpdateStu] = useState({})
     // const [sta,setSta] = useState(false)
     // console.log(updateStau)
     const { checkdate} = useEmprunts()
     const [form,setForm] = useState(
           {livre:'',
-          adherent:'',
-          date_emprunt:'',
-          date_retour_prevue:'',
-          date_retour_effective: null,
+            adherent_id:'',
+            date_emprunt:'',
+            date_retour_prevue:'',
+            date_retour_effective: null,
+         
+          
           })
           //  console.log(update.retard)
   
@@ -28,13 +38,15 @@
         
     }
    
-    console.log(loans)
+     
     const verifidate = loans.filter((l)=> new Date() > new Date(l.date_retour_prevue)&&!['retard','Retourner'].includes(l.status)) || false
     console.log(verifidate) 
     useEffect(()=>{
     if(verifidate.length > 0 ){
       verifidate?.map((l)=> 
-      checkdate(l.id,l.date_retour_prevue,l.date_emprunt));
+      checkdate(l.id,l.date_retour_prevue,l.date_emprunt,l.adherent_id),
+     
+    );
       
     }
       // fetchEmprunts()
@@ -44,7 +56,7 @@
           const retour_prevue = new Date(date_retour_prevue);
           const today = new Date();
           const retar = retour_prevue - today;
-          const retardday = Math.ceil(retar/(1000 * 60 * 60 * 24))+ "J";
+          const retardday = Math.ceil(retar/(1000 * 60 * 60 * 24));
           return {today,retardday}
     }
     const retourner = (id,l)=>{
@@ -52,7 +64,7 @@
           setUpdate({
           id:id,
           livre:l.livre,
-          adherent:l.adherent,
+          adherent_id:l.adherent_id,
           date_emprunt:l.date_emprunt,
           date_retour_prevue:l.date_retour_prevue,
           date_retour_effective:today.toISOString().slice(0, 10),
@@ -79,21 +91,36 @@
     // Calcule les données filtrées ET le statut en temps réel
     const filterSearsh = loans.map(l => {
         if (l.status === 'Retourner') return l;
-        const isLate = new Date() > new Date(l.date_retour_prevue);
-      const {retardday} = dateretard(l.date_retour_prevue)
-      return {
-        ...l,
-        status: isLate ? 'retard' : l.status,
-        retard: isLate ? retardday:l.retard,
 
-      };
-    }).filter(l => 
-      l.adherent.toLowerCase().includes(searsh.toLowerCase()) || 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // On remet à zéro pour comparer les jours
+    const datePrevue = new Date(l.date_retour_prevue);
+    datePrevue.setHours(0, 0, 0, 0);
+
+    const isLate = today > datePrevue;
+    const isToday = today.getTime() === datePrevue.getTime();
+     
+    const { retardday } = dateretard(l.date_retour_prevue);
+    
+    return {
+        ...l,
+        status: isLate ? 'retard' : (isToday ? 'Retourner' : 'active'),
+        retard: isLate ? Math.abs(retardday) : 0,
+    }
+    }).filter(l => { 
+        
+        const member = members.find(m => m.id === l.adherent_id);
+        const adherent = member ? member.nom : "Unknown";      
+       return (
+      adherent.toLowerCase().includes(searsh.toLowerCase()) || 
       l.livre.toLowerCase().includes(searsh.toLowerCase())
-    );
+    )});
+    useEffect(() => {
+     fetchEmprunts();
+    }, []);
     return (
       <div>
-        {/* ── Card ── */}bonsoir professeur Houcine j'ai fini que exercice 5 et push dan
+        {/* ── Card ── */}
         <div className="t-card">
 
           {/* Header */}
@@ -134,14 +161,25 @@
                   </td>
                 </tr>):(
               
-                    filterSearsh.map((l)=><tr  key={l.id}>
+                    filterSearsh.map((l)=>{ 
+                      
+                      const member = members.find(m => m.id === l.adherent_id);
+                      const adherent = member ? member.nom : "Unknown";
+                      return(<tr  key={l.id}>
                       <td><strong>{l.livre}</strong></td>
-                      <td> {l.adherent}</td>
+                      <td> {adherent}</td>
                       <td>{l.date_emprunt} </td>
                       <td>{l.date_retour_prevue} </td>
-                      <td>{l.date_retour_effective}</td>
-                      <td>{l.retard }</td>
-                      <td> <span> {l.status} </span> </td>
+                      <td>{ l.status === 'Retourner' ? new Date().toISOString().slice(0, 10) : l.date_retour_effective || "--"}</td>
+                      <td>{l.retard } Jour</td>
+                      <td>
+                        <span className={`badge ${
+                          l.status === "active" ? "b-active" :
+                          l.status === "retard" ? "b-over" : "b-ret"
+                        }`}>
+                          {l.status}
+                        </span>
+                      </td>
                       <td>
                         <div className="row-acts">
                             {l.status !== 'Retourner'&&
@@ -152,7 +190,7 @@
                           <p className="bi bi-d" onClick={()=>hendledelete(l.id)} >🗑️</p>
                         </div>
                       </td>
-                    </tr>))}
+                    </tr>)}))}
                   
             </tbody>
           </table>
@@ -181,12 +219,18 @@
 
               <div className="form-group">
                 <label>Adhérent </label>
-                <select value={form.adherent}
-                    onChange={(e)=> setForm({...form,adherent:e.target.value})}
+               <select
+                  value={form.adherent_id}
+                  onChange={(e)=> setForm({...form, adherent_id: e.target.value})}
                 >
                   <option value="">-- Sélectionner --</option>
-                    {members.map((m)=>
-                      loans.find((l)=>l.adherent === m.nom)?'':<option  key={m.id}  value={m.nom}>{m.nom}</option>)}
+
+                  {members.map((m)=>(
+                    loans.find((l)=> l.adherent_id === m.id) ? null :
+                    <option key={m.id} value={m.id}>
+                      {m.nom}
+                    </option>
+                  ))}
                 </select>
               </div>
 
