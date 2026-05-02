@@ -9,12 +9,12 @@ class Telecharger extends Model
     protected $table = 'telecharger';
     protected $fillable = [
         'user_id',
-        'adherent_id',
+        // 'adherent_id',
         'livre_id',
-        'fichier',
-        'format',
+        // 'fichier',
+        // 'format',
         'date_telechargement',
-        'download_count',
+        // 'download_count',
         'status',
     ];
     public $timestamps = false;

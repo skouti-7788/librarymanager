@@ -13,10 +13,10 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             // $table->unsignedBigInteger('adherent_id')->nullable();
             $table->unsignedBigInteger('livre_id')->nullable();
-            $table->string('fichier')->nullable();
-            $table->string('format')->nullable();
+            // $table->string('fichier')->nullable();
+            // $table->string('format')->nullable();
             $table->date('date_telechargement');
-            $table->integer('download_count')->default(1);
+            // $table->integer('download_count')->default(1);
             $table->string('status')->nullable();
         });
     }

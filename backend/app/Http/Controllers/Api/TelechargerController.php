@@ -16,13 +16,13 @@ class TelechargerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'nullable|integer|exists:users,id',
-            'adherent_id' => 'nullable|integer|exists:adherents,id',
-            'livre_id' => 'nullable|integer|exists:livres,id',
-            'fichier' => 'nullable|string|max:255',
-            'format' => 'nullable|string|max:50',
+            'user_id' => 'required|integer|exists:user,id',
+            // 'adherent_id' => 'nullable|integer|exists:adherents,id',
+            'livre_id' => 'required|integer|exists:livres,id',
+            // 'fichier' => 'nullable|string|max:255',
+            // 'format' => 'nullable|string|max:50',
             'date_telechargement' => 'required|date',
-            'download_count' => 'nullable|integer|min:1',
+            // 'download_count' => 'nullable|integer|min:1',
             'status' => 'nullable|string',
         ]);
 
@@ -40,13 +40,13 @@ class TelechargerController extends Controller
         $telecharger = Telecharger::findOrFail($id);
 
         $data = $request->validate([
-            'user_id' => 'nullable|integer|exists:users,id',
-            'adherent_id' => 'nullable|integer|exists:adherents,id',
-            'livre_id' => 'nullable|integer|exists:livres,id',
-            'fichier' => 'nullable|string|max:255',
-            'format' => 'nullable|string|max:50',
-            'date_telechargement' => 'nullable|date',
-            'download_count' => 'nullable|integer|min:1',
+            'user_id' => 'required|integer|exists:user,id',
+            // 'adherent_id' => 'nullable|integer|exists:adherents,id',
+            'livre_id' => 'required|integer|exists:livres,id',
+            // 'fichier' => 'nullable|string|max:255',
+            // 'format' => 'nullable|string|max:50',
+            'date_telechargement' => 'required|date',
+            // 'download_count' => 'nullable|integer|min:1',
             'status' => 'nullable|string',
         ]);
 

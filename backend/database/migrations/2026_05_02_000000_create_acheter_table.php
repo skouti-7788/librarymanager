@@ -13,8 +13,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             // $table->unsignedBigInteger('adherent_id')->nullable();
             $table->unsignedBigInteger('livre_id')->nullable();
-            $table->decimal('prix', 8, 2)->default(0.00);
-            $table->integer('quantite')->default(1);
+            // $table->decimal('prix', 8, 2)->default(0.00);
+            // $table->integer('quantite')->default(1);
             $table->date('date_achat');
             $table->string('status')->nullable();
         });
