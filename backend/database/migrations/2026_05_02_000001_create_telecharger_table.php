@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('telecharger', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('adherent_id')->nullable();
+            // $table->unsignedBigInteger('adherent_id')->nullable();
             $table->unsignedBigInteger('livre_id')->nullable();
             $table->string('fichier')->nullable();
             $table->string('format')->nullable();

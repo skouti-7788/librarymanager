@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('acheter', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('adherent_id')->nullable();
+            // $table->unsignedBigInteger('adherent_id')->nullable();
             $table->unsignedBigInteger('livre_id')->nullable();
             $table->decimal('prix', 8, 2)->default(0.00);
             $table->integer('quantite')->default(1);
