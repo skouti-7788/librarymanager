@@ -41,12 +41,19 @@ class LivresController extends Controller
     'qte'           => 'required|integer|min:1',
     'disponibilite' => 'required|integer|in:0,1',
     'status'        => 'required|string|max:50',
+    'pdf_url'       => 'nullable|pdf'
     ]);
     if ($request->hasFile('image')) {
         // تخزين الصورة في storage/app/public/books
         $path = $request->file('image')->store('books', 'public');
         // حفظ المسار النسبي فقط (مثل: books/name.png)
         $validated['image'] = $path;
+    }
+    if ($request->hasFile('pdf_url')) {
+        // تخزين الصورة في storage/app/public/books
+        $path = $request->file('pdf_url')->store('file', 'public');
+        // حفظ المسار النسبي فقط (مثل: books/name.png)
+        $validated['pdf_url'] = $path;
     }
     $livre = Livres::create($validated);
 
@@ -81,6 +88,8 @@ class LivresController extends Controller
     'qte'           => 'required|integer|min:1',
     'disponibilite' => 'required|integer|in:0,1',
     'status'        => 'required|string|max:50',
+    'pdf_url'       => 'nullable|pdf'
+
     
     ]);
 

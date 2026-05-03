@@ -22,7 +22,7 @@ class AdherentsSeeder extends Seeder
     DB::table('adherents')->delete();
 
     DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-    $existingUser = DB::table('user')->first();
+    $existingUser = DB::table('users')->first();
 
     if ($existingUser) {
           ;

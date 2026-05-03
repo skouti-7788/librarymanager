@@ -17,7 +17,7 @@ return new class extends Migration
             // $table->boolean('favorie')->default(false); // هل كان في المفضلة؟
 
             // ربط المعرفات الخارجية (Foreign Keys)
-            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('livre_id')->constrained('livres')->onDelete('cascade');
 
             // بما أنك وضعت timestamps = false في الموديل

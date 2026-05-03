@@ -13,7 +13,7 @@ return new class extends Migration
             
             // ربط المعرفات الخارجية
             // تأكد أن جدول 'user' وجدول 'livres' تم إنشاؤهما قبل هذا الجدول
-            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('livre_id')->constrained('livres')->onDelete('cascade');
             
             // بما أنك وضعت timestamps = false في الموديل، لا نضيف $table->timestamps()

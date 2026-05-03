@@ -10,7 +10,7 @@ class User extends Authenticatable
 {  
     use HasFactory, Notifiable; // 2. تأكد من إضافة HasFactory هنا
 
-    protected $table = 'user'; // ← هاد السطر لازم يكون
+    protected $table = 'users'; // ← هاد السطر لازم يكون
     
     protected $fillable = [
         'username', 'email', 'password',

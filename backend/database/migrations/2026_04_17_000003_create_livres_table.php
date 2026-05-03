@@ -26,6 +26,7 @@ return new class extends Migration
             $table->integer('qte')->default(1); // الكمية
             // $table->boolean('disponibilite')->default(true); // متاح أم لا
             $table->integer('status')->default(1); // الحالة (جديد، مستعمل، إلخ)
+            $table->string('pdf_url')->nullable(); 
             
             // تم حذف $table->timestamps() لأنك حددت false في الموديل
         });

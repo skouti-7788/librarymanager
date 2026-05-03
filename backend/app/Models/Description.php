@@ -10,6 +10,6 @@ class Description extends Model
 
     public function livre()
     {
-        return $this->belongsTo(Livre::class);
+        return $this->belongsTo(Livres::class);
     }
 }

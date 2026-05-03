@@ -46,12 +46,12 @@ class OpinionSeeder extends Seeder
     foreach ($opinions as $index => $item) {
         $email = strtolower(str_replace(' ', '.', $item['username'])) . '@example.com';
 
-        $existingUser = DB::table('user')->where('email', $email)->first();
+        $existingUser = DB::table('users')->where('email', $email)->first();
 
         if ($existingUser) {
             $userId = $existingUser->id;
         } else {
-            $userId = DB::table('user')->insertGetId([
+            $userId = DB::table('users')->insertGetId([
                 'username' => $item['username'],
                 'email'    => $email,
                 'password' => Hash::make('password'),

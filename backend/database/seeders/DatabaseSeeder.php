@@ -13,11 +13,11 @@ class DatabaseSeeder extends Seeder
         // User::factory()->create([...]); 
 
         // 2. إذا كنت تريد إنشاء مستخدم تجريبي، افعل ذلك يدوياً بالأعمدة الصحيحة:
-        User::create([
-            'username' => 'Admin',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('password123'),
-        ]);
+        // User::create([
+        //     'username' => 'Admin',
+        //     'email' => 'admin@example.com',
+        //     'password' => bcrypt('password123'),
+        // ]);
 
         // 3. استدعاء Seeder الكتب (الـ 50 كتاباً)
         $this->call([

@@ -13,7 +13,7 @@ return new class extends Migration
             
             // ربط المعرفات الخارجية
             // نستخدم 'user' و 'livres' بناءً على أسماء الجداول التي أنشأتها سابقاً
-            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('livre_id')->constrained('livres')->onDelete('cascade');
             
             // منع تكرار نفس الكتاب في مفضلة نفس المستخدم مرتين

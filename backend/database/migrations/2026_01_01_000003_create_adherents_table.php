@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('datadahestion'); // تاريخ الانضمام (صححت الخطأ الإملائي من الموديل)
             $table->string('status')->default('active'); // حالة الاشتراك (نشط، موقوف، إلخ)
             $table->string('livre')->nullable(); // الكتاب المستعار حالياً (أو ملاحظة عنه)
-            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
 
             // بما أنك وضعت timestamps = false في الموديل
             // لن يتم إضافة أعمدة created_at و updated_at
