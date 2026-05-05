@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             
             // 1. Zid l-column dyal l-Foreign Key f l-lowel
-            $table->unsignedBigInteger('adherent_id'); 
+            $table->unsignedBigInteger('user_id'); 
             $table->unsignedBigInteger('livre_id');
             // $table->string('livre');             
             $table->date('date_emprunt'); 
@@ -25,9 +25,9 @@ return new class extends Migration
             $table->integer('retard')->default(0); 
 
             // 2. Daba tqder t-dir l-Foreign Key relation
-            $table->foreign('adherent_id')
+            $table->foreign('user_id')
                   ->references('id')
-                  ->on('adherents')
+                  ->on('users')
                   ->onDelete('cascade');
             $table->foreign('livre_id')
                   ->references('id')

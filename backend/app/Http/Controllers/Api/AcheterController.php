@@ -16,13 +16,14 @@ class AcheterController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'nullable|integer|exists:user,id',
+            'user_id' => 'nullable|integer|exists:users,id',
             // 'adherent_id' => 'nullable|integer|exists:adherents,id',
             'livre_id' => 'nullable|integer|exists:livres,id',
             // 'prix' => 'required|numeric|min:0',
             // 'quantite' => 'nullable|integer|min:1',
             'date_achat' => 'required|date',
             'status' => 'nullable|string',
+            'status_paye' => 'nullable|string',
         ]);
 
         $acheter = Acheter::create($validated);
@@ -35,13 +36,15 @@ class AcheterController extends Controller
         $acheter = Acheter::findOrFail($id);
 
         $data = $request->validate([
-            'user_id' => 'nullable|integer|exists:user,id',
+            'user_id' => 'nullable|integer|exists:users,id',
             // 'adherent_id' => 'nullable|integer|exists:adherents,id',
             'livre_id' => 'nullable|integer|exists:livres,id',
             // 'prix' => 'nullable|numeric|min:0',
             // 'quantite' => 'nullable|integer|min:1',
             'date_achat' => 'nullable|date',
-            'status' => 'nullable|string',
+                'status' => 'nullable|string',
+            'status_paye' => 'nullable|string',
+
         ]);
 
         $acheter->update($data);

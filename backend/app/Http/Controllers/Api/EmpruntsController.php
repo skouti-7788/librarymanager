@@ -17,14 +17,14 @@ class EmpruntsController extends Controller
    {
  
     $validated = $request->validate([
-        'livre' => 'required ',
+        // 'livre' => 'required ',
         'livre_id' => 'nullable|integer|exists:livres,id',
         'date_emprunt' => 'required|date',
         'date_retour_prevue' => 'required|date',
         'date_retour_effective' => 'nullable|date',
         'status' => 'nullable|string',
         'retard'=> 'nullable|string',
-        'adherent_id' => 'nullable|integer|exists:adherents,id'
+        'user_id' => 'nullable|integer|exists:users,id'
 
     ]);
     $emprunts =  Emprunts::create($validated);
@@ -37,7 +37,7 @@ class EmpruntsController extends Controller
     //  Validation
     $data = $request->validate([
         'livre' => 'required',
-        'adherent_id' => 'required',
+        'user_id' => 'required',
         'date_emprunt' => 'required|date',
         'date_retour_prevue' => 'required|date',
         'date_retour_effective' => 'nullable|date',

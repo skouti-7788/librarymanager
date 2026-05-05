@@ -20,8 +20,8 @@ class FavoriteController extends Controller
     public function store(Request $request)
 {
     $request->validate([
-        'user_id' => 'required|integer',
-        'livre_id' => 'required|integer',
+        'user_id' => 'required|integer|exists:users,id',
+        'livre_id' => 'required|integer|exists:livres,id',
     ]);
 
     Favorite::firstOrCreate([

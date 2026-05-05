@@ -41,7 +41,9 @@ class LivresController extends Controller
     'qte'           => 'required|integer|min:1',
     'disponibilite' => 'required|integer|in:0,1',
     'status'        => 'required|string|max:50',
-    'pdf_url'       => 'nullable|pdf'
+    'pdf_url'       => 'nullable|pdf',
+    'is_free'       => 'nullable|integer|in:0,1',
+    'download_link' => 'nullable|string',
     ]);
     if ($request->hasFile('image')) {
         // تخزين الصورة في storage/app/public/books
@@ -88,9 +90,10 @@ class LivresController extends Controller
     'qte'           => 'required|integer|min:1',
     'disponibilite' => 'required|integer|in:0,1',
     'status'        => 'required|string|max:50',
-    'pdf_url'       => 'nullable|pdf'
-
-    
+    'pdf_url'       => 'nullable|pdf',
+    'is_free'       => 'nullable|integer|in:0,1',
+    'download_link' => 'nullable|string',
+ 
     ]);
 
     // ✅ Update

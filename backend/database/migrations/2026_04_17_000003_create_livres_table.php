@@ -27,6 +27,9 @@ return new class extends Migration
             // $table->boolean('disponibilite')->default(true); // متاح أم لا
             $table->integer('status')->default(1); // الحالة (جديد، مستعمل، إلخ)
             $table->string('pdf_url')->nullable(); 
+            $table->integer('is_free')->nullable();
+            $table->string('download_link')->nullable();
+            $table->timestamps();
             
             // تم حذف $table->timestamps() لأنك حددت false في الموديل
         });

@@ -32,7 +32,7 @@ class HistoryController extends Controller
         'livre' =>  'required|string',
         'rate' => 'required|integer',
         'livre_id' => 'required|integer|exists:livres,id',
-        'user_id' =>  'required|integer|exists:user,id',
+        'user_id' =>  'required|integer|exists:users,id',
         // 'favorie' => 'required',
     ]);
     

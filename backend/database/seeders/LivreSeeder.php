@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Livres;
 use Illuminate\Support\Facades\Http; // ضروري
 use Faker\Factory as Faker;
+use Illuminate\Support\Facades\DB;
 
 class LivreSeeder extends Seeder
 {
@@ -85,6 +86,9 @@ class LivreSeeder extends Seeder
                 'showLiver'     => $faker->numberBetween(100, 2000),
                 'qte'           => $faker->numberBetween(5, 40),
                 'status'        => 1,
+                'is_free' => $book['pdf_url']==="#" ?0:1,
+                'download_link' => '',
+
             ]);
         }
 
@@ -118,31 +122,25 @@ class LivreSeeder extends Seeder
             dd("No books found (API + JSON)");
         }
 
-        foreach ($apiBooks as $book) {
+        foreach ($apiBooks as $book) { 
+        $category = 'General';
 
-            $formats = $book['formats'] ?? [];
-            $id = $book['id'] ?? null;
-
-            $pdf_url = null;
-
-            foreach ([
-                'application/pdf','text/html','application/epub+zip','text/plain; charset=utf-8',  
-            ] as $format) {
-
-                if (!empty($formats[$format])) {
-                    $pdf_url = $formats[$format];
-                    break;
-                }
+        foreach ($book['bookshelves'] ?? [] as $shelf) {
+            if (str_contains($shelf, 'Category:')) {
+                $category = trim(str_replace('Category:', '', $shelf));
+                break;
             }
-            if (!$pdf_url && $id) {
-                $pdf_url = "https://www.gutenberg.org/cache/epub/$id/pg$id.html";
-            }
-            Livres::create([
+        }
+
+        if ($category === 'General' && !empty($book['bookshelves'][0])) {
+            $category = $book['bookshelves'][0];
+        }
+            $livreId = Livres::insertGetId([
                 'title' => $book['title'] ?? 'Unknown',
                 'author' => $book['authors'][0]['name'] ?? 'Unknown',
-                'category' => 'General',
-                'image' => $formats['image/jpeg'] ?? null,
-                'pdf_url' => $pdf_url,
+                'category' => $category,
+                'image' => $book['formats']['image/jpeg'] ?? null,
+                'pdf_url' =>  $book['formats']['text/html'] ??  '#',
                 'annee' => now()->year,
                 'pages' => 0,
                 'fileSize' => rand(1, 15).' MB',
@@ -153,7 +151,35 @@ class LivreSeeder extends Seeder
                 'showLiver' => rand(100, 2000),
                 'qte' => rand(5, 40),
                 'status' => 1,
+                'is_free' => $book['formats']['text/html'] ==="#" ?0:1,
+                'download_link' => $book['formats']['application/epub+zip'] ??  '',
+            ]);
+
+            DB::table('descriptions')->insert([
+                'livre_id' =>  $livreId,
+                'description' => $book['summaries'][0] ?? '',
             ]);
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

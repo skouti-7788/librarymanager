@@ -16,7 +16,7 @@ class TelechargerController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'user_id' => 'required|integer|exists:user,id',
+            'user_id' => 'required|integer|exists:users,id',
             // 'adherent_id' => 'nullable|integer|exists:adherents,id',
             'livre_id' => 'required|integer|exists:livres,id',
             // 'fichier' => 'nullable|string|max:255',
@@ -40,7 +40,7 @@ class TelechargerController extends Controller
         $telecharger = Telecharger::findOrFail($id);
 
         $data = $request->validate([
-            'user_id' => 'required|integer|exists:user,id',
+            'user_id' => 'required|integer|exists:users,id',
             // 'adherent_id' => 'nullable|integer|exists:adherents,id',
             'livre_id' => 'required|integer|exists:livres,id',
             // 'fichier' => 'nullable|string|max:255',

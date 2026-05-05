@@ -14,7 +14,7 @@ class OpinionsController extends Controller
         $livre = Livres::findOrFail($livre_id);
 
         $opinions = Opinion::where('livre_id', $livre_id)
-            ->with('user')
+            ->with('users')
             ->orderBy('created_at', 'desc')
             ->get();
 
